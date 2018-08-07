@@ -1,4 +1,6 @@
 .vs
 arquivos.apoio
-CasaDoCodigo\bin
-CasaDoCodigo\obj
+/CasaDoCodigo/bin
+/CasaDoCodigo/obj
+/CasaDoCodigo/bin/Debug/netcoreapp2.1
+/CasaDoCodigo/obj/Debug/netcoreapp2.1

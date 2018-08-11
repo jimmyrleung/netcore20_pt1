@@ -15,7 +15,7 @@ namespace CasaDoCodigo
     public class Startup
     {
         // O ASP.NET Core já injeta para nós um objeto IConfiguration
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IEnvi)
         {
             Configuration = configuration;
         }
@@ -37,6 +37,12 @@ namespace CasaDoCodigo
             string connectionString = Configuration.GetConnectionString("development");
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Queremos disponibilizar o serviço "Configuration" para toda aplicação pois ele tem
+            // os dados do arquivo appsettings.
+            // O IConfiguration já é configurado internamente, mas será colocado abaixo como exemplo
+            // de como carregar um serviço e disponibilizá-lo para toda aplicação
+            services.AddSingleton<IConfiguration>(Configuration);
 
             // Adiciona um DbContext
             services.AddDbContext<ApplicationContext>(options =>
@@ -74,8 +80,8 @@ namespace CasaDoCodigo
             serviceProvider.GetService<ApplicationContext>().Database.Migrate();
 
             // O EnsureCreated é uma alternativa ao Migrate e, como o nome diz, garante que nosso Contexto de BD foi criado
-            // Entretanto, ele não utiliza o esquema de Migrations, portanto, deve ser utilizado
-            // somente em pequenas aplicações de teste
+            // Entretanto, ele não utiliza o esquema de Migrations, apenas pega as entidades e o mapeamento feito, 
+            // Portanto, deve ser utilizado somente em pequenas aplicações de teste
             //serviceProvider.GetService<ApplicationContext>().Database.EnsureCreated();
         }
     }

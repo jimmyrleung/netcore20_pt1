@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,7 @@ namespace CasaDoCodigo
 {
     public class Startup
     {
+        // O ASP.NET Core já injeta para nós um objeto IConfiguration
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -21,6 +23,7 @@ namespace CasaDoCodigo
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // Serve para adicionar novos serviços (Log, MVC, SQL Server)
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
@@ -30,12 +33,23 @@ namespace CasaDoCodigo
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            // 
+            string connectionString = Configuration.GetConnectionString("development");
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Adiciona um DbContext
+            services.AddDbContext<ApplicationContext>(options =>
+                options.UseSqlServer(connectionString)
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        // Consome os serviços que foram adicionados no ConfigureServices
+        // O ASP.NET Core possui um esquema nativo de injeção de dependências via parâmetros, geralmente
+        // via Interface
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -55,6 +69,14 @@ namespace CasaDoCodigo
                     name: "default",
                     template: "{controller=Pedido}/{action=Carrossel}/{id?}");
             });
+
+            // O Migrate irá aplicar nossas Migrations no nosso BD
+            serviceProvider.GetService<ApplicationContext>().Database.Migrate();
+
+            // O EnsureCreated é uma alternativa ao Migrate e, como o nome diz, garante que nosso Contexto de BD foi criado
+            // Entretanto, ele não utiliza o esquema de Migrations, portanto, deve ser utilizado
+            // somente em pequenas aplicações de teste
+            //serviceProvider.GetService<ApplicationContext>().Database.EnsureCreated();
         }
     }
 }

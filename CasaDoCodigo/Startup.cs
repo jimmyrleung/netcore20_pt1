@@ -15,7 +15,7 @@ namespace CasaDoCodigo
     public class Startup
     {
         // O ASP.NET Core já injeta para nós um objeto IConfiguration
-        public Startup(IConfiguration configuration, IEnvi)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -48,6 +48,12 @@ namespace CasaDoCodigo
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(connectionString)
             );
+
+            // Adicionar uma instância que exista somente enquanto os objetos
+            // que utilizarem essa instancia estiverem ativos
+            // É uma boa prática extrair a interface de uma determinada classe e ao adicionar um serviço 
+            // Especificar tanto a inferface quanto a classe que estamos utilizando
+            services.AddTransient<IDataService, DataService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,7 +83,7 @@ namespace CasaDoCodigo
             });
 
             // O Migrate irá aplicar nossas Migrations no nosso BD
-            serviceProvider.GetService<ApplicationContext>().Database.Migrate();
+            serviceProvider.GetService<IDataService>().InicializaDB();
 
             // O EnsureCreated é uma alternativa ao Migrate e, como o nome diz, garante que nosso Contexto de BD foi criado
             // Entretanto, ele não utiliza o esquema de Migrations, apenas pega as entidades e o mapeamento feito, 

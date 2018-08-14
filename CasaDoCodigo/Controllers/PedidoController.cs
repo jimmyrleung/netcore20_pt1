@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CasaDoCodigo.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,19 @@ namespace CasaDoCodigo.Controllers
     public class PedidoController : Controller
     {
         private IConfiguration _configuration;
+        private readonly IProdutoRepository _produtoRepository;
 
-        public PedidoController(IConfiguration configuration)
+        public PedidoController(IConfiguration configuration, IProdutoRepository produtoRepository)
         {
             // Acessamos o serviço de configuração que foi configurado na classe Startup
             // via injeção de dependência
             _configuration = configuration;
+            _produtoRepository = produtoRepository;
         }
 
         public IActionResult Carrossel()
         {
-            return View();
+            return View(_produtoRepository.GetProdutos());
         }
 
         public IActionResult Carrinho()

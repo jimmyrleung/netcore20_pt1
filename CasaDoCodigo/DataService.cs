@@ -1,4 +1,5 @@
 ﻿using CasaDoCodigo.Models;
+using CasaDoCodigo.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -10,37 +11,32 @@ namespace CasaDoCodigo
     public class DataService : IDataService
     {
         private readonly ApplicationContext _context;
+        private readonly IProdutoRepository _produtoRepository;
 
         // Nosso ApplicationContext vem via injeção de dependência
         // pois foi configurado no ConfigureServices
-        public DataService(ApplicationContext context)
+        public DataService(ApplicationContext context, IProdutoRepository produtoRepository)
         {
             this._context = context;
+            this._produtoRepository = produtoRepository;
         }
 
         public void InicializaDB()
         {
             _context.Database.Migrate();
+            if (!_produtoRepository.HasAny())
+            {
+                List<Livro> livros = GetLivrosFromJSON();
+                _produtoRepository.SaveProdutos(livros);
+                _context.SaveChanges();
+            }
+        }
 
+        private static List<Livro> GetLivrosFromJSON()
+        {
             var livrosJson = File.ReadAllText("livros.json");
             var livros = JsonConvert.DeserializeObject<List<Livro>>(livrosJson);
-
-            foreach (var livro in livros)
-            {
-                // Cada tabela é representada por um "Set" do EF
-                _context.Set<Produto>().Add(
-                    new Produto(livro.Codigo, livro.Nome, livro.Preco)
-                );
-            }
-
-            _context.SaveChanges();
+            return livros;
         }
-    }
-
-    class Livro
-    {
-        public string Codigo { get; set; }
-        public string Nome { get; set; }
-        public decimal Preco { get; set; }
     }
 }

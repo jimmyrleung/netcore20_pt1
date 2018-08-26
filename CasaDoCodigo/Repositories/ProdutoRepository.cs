@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace CasaDoCodigo.Repositories
 {
-    public class ProdutoRepository : IProdutoRepository
-    {
-        private readonly ApplicationContext _context;
-        private DbSet<Produto> dbProduto;
-
-        public ProdutoRepository(ApplicationContext context)
+    public class ProdutoRepository : BaseRepository<Produto>, IProdutoRepository
+    {   
+        // Passa para a classe base o contexto necessário
+        public ProdutoRepository(ApplicationContext context) : base(context)
         {
-            this._context = context;
-            dbProduto = _context.Set<Produto>();
         }
 
         public void SaveProdutos(List<Livro> livros)
@@ -23,7 +19,7 @@ namespace CasaDoCodigo.Repositories
             foreach (var livro in livros)
             {
                 // Cada tabela é representada por um "Set" do EF
-                dbProduto.Add(
+                dbSet.Add(
                     new Produto(livro.Codigo, livro.Nome, livro.Preco)
                 );
             }
@@ -31,12 +27,12 @@ namespace CasaDoCodigo.Repositories
 
         public IList<Produto> GetProdutos()
         {
-            return dbProduto.ToList();
+            return dbSet.ToList();
         }
 
         public bool HasAny()
         {
-            return dbProduto.Any();
+            return dbSet.Any();
         }
     }
 

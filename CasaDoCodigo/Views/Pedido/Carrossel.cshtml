@@ -1,4 +1,8 @@
-﻿@model IList<Produto>;
+﻿@{
+    ViewData["Title"] = "Carrossel";
+}
+
+@model IList<Produto>;
 <h3>Catálogo</h3>
 
 <div id="my-carousel" class="carousel slide" data-ride="carousel">
@@ -33,7 +37,17 @@
                                     <div class="produto-nome">@produto.Nome</div>
                                     <div><h4><strong>@produto.Preco</strong></h4></div>
                                     <div class="text-center">
-                                        <a href="/" class="btn btn-success">Adicionar</a>
+                                        @*Atributos com prefixo "asp-" indicam tag-helpers,
+                                            ou seja, atributos especiais que serão utilizados
+                                            pela engine de renderização do .NET Core.
+
+                                            As tag helpers são a nova implementação dos 
+                                            Html Helpers (ex: @Html.Action("controller", "action")) 
+                                            do ASP.NET MVC (.NET Framework)
+                                        *@
+                                        <a asp-controller="pedido"
+                                           asp-action="carrinho"
+                                           class="btn btn-success">Adicionar</a>
                                     </div>
                                 </div>
                             </div>

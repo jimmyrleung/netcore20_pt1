@@ -39,6 +39,12 @@ namespace CasaDoCodigo
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            // Serviço de cache distribuído
+            services.AddDistributedMemoryCache();
+
+            // Serviço de sessão
+            services.AddSession();
+
             // Queremos disponibilizar o serviço "Configuration" para toda aplicação pois ele tem
             // os dados do arquivo appsettings.
             // O IConfiguration já é configurado internamente, mas será colocado abaixo como exemplo
@@ -78,13 +84,17 @@ namespace CasaDoCodigo
             }
 
             app.UseStaticFiles();
+
+            // Serviço de sessão
+            app.UseSession();
+
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Pedido}/{action=Carrossel}/{id?}");
+                    template: "{controller=Pedido}/{action=Carrossel}/{codigo?}");
             });
 
             // O Migrate irá aplicar nossas Migrations no nosso BD

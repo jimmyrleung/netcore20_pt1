@@ -37,16 +37,31 @@
                                     <div class="produto-nome">@produto.Nome</div>
                                     <div><h4><strong>@produto.Preco</strong></h4></div>
                                     <div class="text-center">
-                                        @*Atributos com prefixo "asp-" indicam tag-helpers,
+                                        @*
+                                            Atributos com prefixo "asp-" indicam tag-helpers,
                                             ou seja, atributos especiais que serão utilizados
                                             pela engine de renderização do .NET Core.
 
-                                            As tag helpers são a nova implementação dos 
-                                            Html Helpers (ex: @Html.Action("controller", "action")) 
+                                            As tag helpers são a nova implementação dos
+                                            Html Helpers (ex: @Html.Action("controller", "action"))
                                             do ASP.NET MVC (.NET Framework)
+
+                                            Como estamos chamando uma action que também é da controller
+                                            "Pedido", podemos omitir o asp-controller
+
+                                            Para passar dados numa navegação nós utilizamos a tag helper
+                                            'asp-route', que nos permite adicionar
+                                            parametros da seguinte forma: asp-route-param
+
+                                            Geralmente esse 'param' é passado via queryParam, o que geraria
+                                            por exemplo a url  /Pedido/Carrinho?codigo=codigoDoProdutoAqui,
+                                            Entretanto,como no startup nossas rotas estão configuradas para
+                                            receber (de forma opcional) um 'codigo' e utilizamos o param 'codigo'
+                                            (asp-route-codigo) a url a ser gerada será /Pedido/Carrinho/codigoDoProdutoAqui
+
                                         *@
-                                        <a asp-controller="pedido"
-                                           asp-action="carrinho"
+                                        <a asp-action="carrinho"
+                                           asp-route-codigo="@produto.Codigo"
                                            class="btn btn-success">Adicionar</a>
                                     </div>
                                 </div>

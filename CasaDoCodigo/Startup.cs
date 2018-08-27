@@ -45,6 +45,8 @@ namespace CasaDoCodigo
             // Serviço de sessão
             services.AddSession();
 
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
             // Queremos disponibilizar o serviço "Configuration" para toda aplicação pois ele tem
             // os dados do arquivo appsettings.
             // O IConfiguration já é configurado internamente, mas será colocado abaixo como exemplo

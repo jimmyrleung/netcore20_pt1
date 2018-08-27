@@ -1,4 +1,5 @@
-﻿using CasaDoCodigo.Repositories;
+﻿using CasaDoCodigo.Models;
+using CasaDoCodigo.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -12,13 +13,15 @@ namespace CasaDoCodigo.Controllers
     {
         private IConfiguration _configuration;
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IPedidoRepository _pedidoRepository;
 
-        public PedidoController(IConfiguration configuration, IProdutoRepository produtoRepository)
+        public PedidoController(IConfiguration configuration, IProdutoRepository produtoRepository, IPedidoRepository pedidoRepository)
         {
             // Acessamos o serviço de configuração que foi configurado na classe Startup
             // via injeção de dependência
             _configuration = configuration;
             _produtoRepository = produtoRepository;
+            _pedidoRepository = pedidoRepository;
         }
 
         public IActionResult Carrossel()
@@ -26,9 +29,16 @@ namespace CasaDoCodigo.Controllers
             return View(_produtoRepository.GetProdutos());
         }
 
-        public IActionResult Carrinho()
+        public IActionResult Carrinho(string codigo)
         {
-            return View();
+            if (!string.IsNullOrEmpty(codigo))
+            {
+                // Se o código for preenchido vamos adicioanr um item ao nosso pedido
+                _pedidoRepository.AddItem(codigo);
+            }
+
+            Pedido p = _pedidoRepository.GetPedido();
+            return View(p.Itens);
         }
 
         public IActionResult Cadastro()
@@ -38,7 +48,8 @@ namespace CasaDoCodigo.Controllers
 
         public IActionResult Resumo()
         {
-            return View();
+            Pedido pedido = _pedidoRepository.GetPedido();
+            return View(pedido);
         }
 
         /**

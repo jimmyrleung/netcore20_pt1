@@ -27,7 +27,7 @@
     <div class="panel-body">
         @foreach (var item in Model)
         {
-            <div class="row row-center linha-produto">
+            <div class="row row-center linha-produto" item-id="@item.Id">
                 <div class="col-md-3">
                     <img class="img-produto-carrinho" src="/images/produtos/large_@(item.Produto.Codigo).jpg" />
                 </div>
@@ -43,7 +43,7 @@
                         <input type="text" value="@(item.Quantidade)"
                                class="form-control text-center" />
                         <span class="input-group-btn">
-                            <button class="btn btn-default">
+                            <button class="btn btn-default" onclick="incrementarQtde(this)">
                                 <span class="glyphicon-plus"></span>
                             </button>
                         </span>
@@ -85,3 +85,23 @@
         </div>
     </div>
 </div>
+@*Ao colocar dentro da section, indicamos ao .NET Core que esse script deve ser carregado após as demais dependências
+no final da nossa página e não exatamente embaixo do código HTML acima. Isso evita que esse script faça referência
+a algo que ainda não foi importado*@
+@section Scripts {
+    <script type="text/javascript">
+        function incrementarQtde(btn) {
+            // Pega um elemento que tenha o atributo item-id
+            var itemLine = $(btn).parents('[item-id]');
+            var novaQtde = $(itemLine).find('input').val();
+            var itemId = $(itemLine).attr("item-id");
+
+            $.ajax({
+                url: "/Pedido/UpdateQuantidade",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ itemPedidoId: itemId, quantidade: novaQtde })
+            });
+        }
+    </script>
+}

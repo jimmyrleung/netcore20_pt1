@@ -52,6 +52,11 @@ namespace CasaDoCodigo.Controllers
             return View(pedido);
         }
 
+        [HttpPost]
+        public IActionResult UpdateQuantidade([FromBody]UpdateQuantidadeRequest updateQuantidadeRequest) {
+            return Ok();
+        }
+
         /**
          * Método criado para testar o carregamento de seções do arquivo appsettings
          * Nele mostramos como os itens podem ser carregados de diversas formas
